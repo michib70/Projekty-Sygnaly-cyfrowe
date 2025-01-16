@@ -1,0 +1,18 @@
+def f1(x):
+    return np.sin(x)
+
+def f2(x):
+    return np.sin(1/x)
+
+def f3(x):
+    return np.sign(np.sin(8 * x))
+
+# Jadra
+def h1(x):
+    return np.where((x >= 0) & (x <= 1), 1, 0)
+
+def h2(x):
+    return np.where((x >= -0.5) & (x <= 0.5), 1, 0)
+
+def h3(x):
+    return np.where(np.abs(x) <= 1, 1 - np.abs(x), 0)
