@@ -35,3 +35,42 @@ def interpolation(f, x_values, kernel, dx=0.05):
 # Definicja bledu MSE
 def mse(y_true, y_pred):
     return np.mean((y_true - y_pred) ** 2)
+
+def convolution_2d(image, kernel):
+    # Rozmiar jadra i obrazu
+    h, w = image.shape
+    kh, kw = kernel.shape
+    half_kh, half_kw = kh // 2, kw // 2
+
+    # Wyjściowy obraz
+    convolved_image = np.zeros_like(image, dtype=np.float64)
+
+    # Iteracja po pikselach obrazu
+    for i in range(half_kh, h - half_kh):
+        for j in range(half_kw, w - half_kw):
+            region = image[i - half_kh:i + half_kh + 1, j - half_kw:j + half_kw + 1]
+            convolved_image[i, j] = np.sum(region * kernel)
+
+    convolved_image /= np.sum(kernel)
+    return convolved_image
+
+# Skalowanie obrazu z jadrem 
+def scale_image_convolution(image, scale_factor):
+
+    kernel_size = max(int(abs(1 / scale_factor)), 1)
+    if kernel_size % 2 == 0:
+        kernel_size += 1  # Ensure kernel size is odd
+    kernel = np.ones((kernel_size, kernel_size)) / (kernel_size ** 2)
+
+    # Zmniejszanie (splot)
+    if scale_factor < 1:
+        smoothed = convolution_2d(image, kernel)
+        output_size = (int(image.shape[1] * scale_factor), int(image.shape[0] * scale_factor))
+        scaled = cv2.resize(smoothed, output_size, interpolation=cv2.INTER_AREA)
+    # Powiększanie (z interpolacją)
+    else:
+        output_size = (int(image.shape[1] * scale_factor), int(image.shape[0] * scale_factor))
+        scaled = cv2.resize(image, output_size, interpolation=cv2.INTER_LINEAR)
+
+    return scaled
+
