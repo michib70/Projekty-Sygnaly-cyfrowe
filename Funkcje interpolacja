@@ -1,0 +1,37 @@
+def convolution(y_values, kernel_values, dx=0.05):
+    n = len(y_values)
+    m = len(kernel_values)
+    y_interpolated = np.zeros(n)
+
+    # Rozmiar półokna
+    half_window = m // 2
+
+    # Iteracja po punktach sygnału
+    for i in range(n):
+        for j in range(m):
+            # Współrzędne przesunięte
+            k = i + j - half_window
+            if 0 <= k < n:
+                y_interpolated[i] += y_values[k] * kernel_values[j]
+
+    # Normalizacja
+    y_interpolated /= sum(kernel_values)
+    return y_interpolated
+
+# Definicja funkcji do interpolacji
+def interpolation(f, x_values, kernel, dx=0.05):
+    y_values = f(x_values)  # y przyjmuje wartości f(x)
+
+    # Zasięg jądra
+    x_kernel = np.arange(-5, 5, dx)  # od -5 do 5 z krokiem dx
+    kernel_values = kernel(x_kernel)
+
+    # Konwolucja funkcji
+    y_interpolated = convolution(y_values, kernel_values, dx)
+    return y_interpolated
+
+
+
+# Definicja bledu MSE
+def mse(y_true, y_pred):
+    return np.mean((y_true - y_pred) ** 2)
